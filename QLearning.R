@@ -1,15 +1,30 @@
-install.packages('nnet')
+# install.packages('nnet')
 library(nnet)
 
+# Initialization
 
 # Initialize matrix R and Q, first term is values, 2nd row, 3rd coloum
 rowLimit = 4
 colLimit = 12
+# Greedy factor: Lower greedy, Higher random
+epsilon = 0.01;
+# Learning Rate
+alpha = 0.9;
+# Exploration factor: Lower immediate reward, Higher later reward
+gamma = 0.8;
 
 R = matrix(-1, rowLimit, colLimit)
 Q = matrix(0, rowLimit, colLimit)
+P = matrix(0, rowLimit, colLimit)
+initialCell = c(4, 1)
+# Current Cell
+currentCell = c(4, 1)
+nextCell = c(4, 1)
 R[4, 2:11] = -100
 R[4, 12] = 100
+
+
+# Functions
 
 findNeighbor <- function(cell, rowLim, colLim) {
   Neighbors = matrix(0, 0, 2)
@@ -25,15 +40,16 @@ findNeighbor <- function(cell, rowLim, colLim) {
   if(r < rowLim)
     Neighbors <- rbind(Neighbors, c((r+1), c))
   #RIGHT
-  if(1 < colLim)
+  if(c < colLim)
     Neighbors <- rbind(Neighbors, c((r), c+1))
   return(Neighbors)
 }
-
+# Finds the next cell to move to accodring to the greedy algorithm
 epsilonGreedy <- function(neighborhood, epsilon, rewardMatrix) {
   random = runif(1)
   if(random < epsilon) {
-    winner = sample(1:4, 1)
+    n = nrow(neighborhood)
+    winner = sample(1:n, 1)
     return(neighborhood[winner,])
   }
   else {
@@ -45,6 +61,63 @@ epsilonGreedy <- function(neighborhood, epsilon, rewardMatrix) {
     return(neighborhood[index,])
   }
 }
+# Finds max neighbor of Q matrix
+findQMax <- function(cell, Matrix) {
+  # dim function returns two values, the number of rows and number of columns
+  N <- findNeighbor(cell, dim(Matrix)[1], dim(Matrix)[2])
+  maxValue <- Matrix[N[1,1],N[1,2]]
+  for(i in 2:nrow(N)) {
+    currentValue = Matrix[N[i,1],N[i,2]]
+    if(maxValue < currentValue)
+      maxValue = currentValue
+  }
+  return(maxValue)
+}
 
-Neigh <- findNeighbor(c(3,2), rowLimit, colLimit)
+# Function Test
+Neigh <- findNeighbor(c(1,12), rowLimit, colLimit)
 cell <-epsilonGreedy(Neigh, 0.5, R)
+print(cell)
+
+
+
+for(j in 1:1000){
+  
+  # Initilizing Episode
+  
+  currentCell = initialCell
+  # P = matrix(0, rowLimit, colLimit)
+  P[currentCell[1], currentCell[2]] = P[currentCell[1], currentCell[2]] + 1
+  
+  # One Episode
+  
+  while(R[currentCell[1], currentCell[2]] != 100) {
+    
+    currentNeighbors = findNeighbor(currentCell, rowLimit, colLimit)
+    nextCell = epsilonGreedy(currentNeighbors, epsilon, Q)
+    
+    # Q Learning Formula
+    Q[currentCell[1],currentCell[2]] = Q[currentCell[1],currentCell[2]] + alpha * 
+      (R[currentCell[1],currentCell[2]] + gamma * findQMax(nextCell, Q) - Q[currentCell[1],currentCell[2]])
+    
+    # If he falls into cliff
+    if(R[currentCell[1], currentCell[2]] == -100){
+      print("AAAAAAWWWWWWWWWWWWWWWWWWWWWW!!!!")
+      currentCell = initialCell
+    }
+    else{
+      currentCell = nextCell
+    }
+    
+    P[currentCell[1], currentCell[2]] = P[currentCell[1], currentCell[2]] + 1
+    
+    
+  }
+}
+
+print(Q)
+print(P)
+sum(P)
+
+
+

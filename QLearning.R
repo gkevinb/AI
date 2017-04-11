@@ -13,19 +13,22 @@ alpha = 0.9;
 # Exploration factor: Lower immediate reward, Higher later reward
 gamma = 0.8;
 
+# Initializing the rewards matrix
 R = matrix(-1, rowLimit, colLimit)
-Q = matrix(0, rowLimit, colLimit)
-P = matrix(0, rowLimit, colLimit)
-initialCell = c(4, 1)
-# Current Cell
-currentCell = c(4, 1)
-nextCell = c(4, 1)
 R[4, 2:11] = -100
 R[4, 12] = 100
 
+Q = matrix(0, rowLimit, colLimit)
+P = matrix(0, rowLimit, colLimit)
+
+# Starting point, initial point
+initialCell = c(4, 1)
+currentCell = c(4, 1)
+nextCell = c(4, 1)
+
 
 # Functions
-
+#Find all neighboring cells
 findNeighbor <- function(cell, rowLim, colLim) {
   Neighbors = matrix(0, 0, 2)
   r = cell[1]
@@ -46,6 +49,7 @@ findNeighbor <- function(cell, rowLim, colLim) {
 }
 # Finds the next cell to move to accodring to the greedy algorithm
 epsilonGreedy <- function(neighborhood, epsilon, rewardMatrix) {
+  #Random number between 0-1
   random = runif(1)
   if(random < epsilon) {
     n = nrow(neighborhood)
@@ -80,7 +84,7 @@ cell <-epsilonGreedy(Neigh, 0.5, R)
 print(cell)
 
 
-
+# The Q-learning
 for(j in 1:1000){
   
   # Initilizing Episode

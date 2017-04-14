@@ -7,19 +7,20 @@ library(nnet)
 rowLimit = 4
 colLimit = 12
 # Greedy factor: Lower greedy, Higher random
-epsilon = 0.01;
+epsilon = 0;
 # Learning Rate
-alpha = 0.9;
+alpha = 0.8;
 # Exploration factor: Lower immediate reward, Higher later reward
-gamma = 0.8;
+gamma = 0.7;
 
 # Initializing the rewards matrix
 R = matrix(0, rowLimit * colLimit, 4)
-colnames(R) <- c("UP","LEFT","DOWN","RIGHT")
+#colnames(R) <- c("UP","LEFT","DOWN","RIGHT")
 R <- populateR(R)
 R[37,4] = -100
 R[26:35, 3] = -100
 R[36, 3] = 100
+R[48, 1:4] = 100
 
 #Matrix Numbering
 # -------------------------------------
@@ -32,12 +33,14 @@ R[36, 3] = 100
 # |S |38|39|40|41|42|43|44|45|46|47|G |
 
 Q = matrix(0, rowLimit * colLimit, 4)
+MappingMatrix = matrix(0, rowLimit * colLimit, 2)
+MappingMatrix <- populateMappingMatrix(MappingMatrix)
 P = matrix(0, rowLimit, colLimit)
 
 # Starting point, initial point
-initialCell = c(37, 1)
-currentCell = c(37, 1)
-nextCell = c(37, 1)
+initialState = c(37, 1)
+currentStateAction = c(37, 1)
+nextStateAction = c(37, 1)
 
 # Functions
 # Populate Rewards Matrix
@@ -65,26 +68,26 @@ populateR <- function(RMatrix) {
 findNeighbor <- function(cell) {
   Neighbors = matrix(0, 0, 2)
   r = cell[1]
-  c = cell[2]
   #UP
   if(12 < r)
-    Neighbors <- rbind(Neighbors, c((r-12), c))
+    Neighbors <- rbind(Neighbors, c((r-12), 1))
   #LEFT
   if(r %% 12 != 1)
-    Neighbors <- rbind(Neighbors, c((r-1), c-1))
+    Neighbors <- rbind(Neighbors, c((r-1), 2))
   #DOWN
   if(r < 37)
-    Neighbors <- rbind(Neighbors, c((r+12), c))
+    Neighbors <- rbind(Neighbors, c((r+12), 3))
   #RIGHT
   if(r %% 12 != 0)
-    Neighbors <- rbind(Neighbors, c((r+1), c+1))
+    Neighbors <- rbind(Neighbors, c((r+1), 4))
   return(Neighbors)
 }
 
 
-# Finds the next cell to move to accodring to the greedy algorithm
-epsilonGreedy <- function(neighborhood, epsilon, rewardMatrix) {
+# Finds the next cell to move to accodring to the greedy algorithm in Q matrix
+epsilonGreedy <- function(state, epsilon, Matrix) {
   #Random number between 0-1
+  neighborhood <- findNeighbor(state)
   random = runif(1)
   if(random < epsilon) {
     n = nrow(neighborhood)
@@ -94,24 +97,48 @@ epsilonGreedy <- function(neighborhood, epsilon, rewardMatrix) {
   else {
     rewards = c()
     for(i in 1:nrow(neighborhood)){
-      rewards <- c(rewards, rewardMatrix[neighborhood[i,1],neighborhood[i,2]])
+      direction <- neighborhood[i,2]
+      rewards <- c(rewards, Matrix[state[1], direction])
     }
     index = which.is.max(rewards)
     return(neighborhood[index,])
   }
 }
 # Finds max neighbor of Q matrix
-findQMax <- function(cell, Matrix) {
-  N <- findNeighbor(cell)
-  print(N[1,1])
-  print(N[1,2])
-  maxValue <- Matrix[N[1,1],N[1,2]]
-  for(i in 2:nrow(N)) {
-    currentValue = Matrix[N[i,1],N[i,2]]
-    if(maxValue < currentValue)
-      maxValue = currentValue
+findQMax <- function(stateAction, Matrix) {
+  N <- findNeighbor(stateAction)
+  values <- c()
+  for(i in 1:nrow(N)){
+    action <- N[i,2]
+    values <- c(values, Matrix[stateAction[1], action])
   }
-  return(maxValue)
+  return(max(values))
+}
+
+populateMappingMatrix <- function(Map) {
+  for(i in 1:12){
+    Map[i,1] = 1
+    Map[i,2] = i
+  }
+  for(i in 13:24){
+    Map[i,1] = 2
+    Map[i,2] = (i - 12)
+  }
+  for(i in 25:36){
+    Map[i,1] = 3
+    Map[i,2] = (i - 24)
+  }
+  for(i in 37:48){
+    Map[i,1] = 4
+    Map[i,2] = (i - 36)
+  }
+  return(Map)
+}
+mapping <- function(state, Map) {
+  cell <- c(0, 0)
+  cell[1] <- Map[state[1], 1]
+  cell[2] <- Map[state[1], 2]
+  return(cell)
 }
 
 # # Function Test
@@ -122,39 +149,45 @@ findQMax <- function(cell, Matrix) {
 
 # The Q-learning
 for(j in 1:1000){
-  
+  P = matrix(0, rowLimit, colLimit)
   # Initilizing Episode
-  
-  currentCell = initialCell
-  # P = matrix(0, rowLimit, colLimit)
-  #P[currentCell[1], currentCell[2]] = P[currentCell[1], currentCell[2]] + 1
+  counter = 0;
+  currentStateAction = initialState
+  mapCell = mapping(currentStateAction, MappingMatrix)
+  P[mapCell[1], mapCell[2]] = P[mapCell[1], mapCell[2]] + 1
   
   # One Episode
-  
-  while(R[currentCell[1], currentCell[2]] != 100) {
+
+    repeat {
     
-    currentNeighbors = findNeighbor(currentCell)
-    nextCell = epsilonGreedy(currentNeighbors, epsilon, Q)
+    nextStateAction = epsilonGreedy(currentStateAction, epsilon, Q)
     
     # Q Learning Formula
-    Q[currentCell[1],currentCell[2]] = Q[currentCell[1],currentCell[2]] + alpha * 
-      (R[currentCell[1],currentCell[2]] + gamma * findQMax(nextCell, Q) - Q[currentCell[1],currentCell[2]])
+    Q[currentStateAction[1],nextStateAction[2]] = Q[currentStateAction[1],nextStateAction[2]] + alpha * 
+      (R[currentStateAction[1],nextStateAction[2]] +
+         gamma * findQMax(nextStateAction, Q) - Q[currentStateAction[1],nextStateAction[2]])
+    
+    
+    
     
     # If he falls into cliff
-    if(R[currentCell[1], currentCell[2]] == -100){
+    if(currentStateAction[1] > 37 && currentStateAction[1] < 48){
       print("AAAAAAWWWWWWWWWWWWWWWWWWWWWW!!!!")
-      currentCell = initialCell
+      counter = counter + 1
+      currentStateAction = initialState
     }
     else{
-      currentCell = nextCell
+      currentStateAction = nextStateAction
     }
     
-    #P[currentCell[1], currentCell[2]] = P[currentCell[1], currentCell[2]] + 1
+    mapCell = mapping(currentStateAction, MappingMatrix)
+    P[mapCell[1], mapCell[2]] = P[mapCell[1], mapCell[2]] + 1
     
+    if(currentStateAction[1] == 48) {
+      break
+    }
     
   }
 }
-
-print(Q)
-#print(P)
-sum(P)
+  
+print(counter)

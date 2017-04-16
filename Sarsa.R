@@ -7,11 +7,11 @@ library(nnet)
 rowLimit = 4
 colLimit = 12
 # Greedy factor: Lower greedy, Higher random
-epsilon = 0;
+epsilon = 0.1;
 # Learning Rate
-alpha = 0.8;
+alpha = 1;
 # Exploration factor: Lower immediate reward, Higher later reward
-gamma = 0.7;
+gamma = 1;
 
 # Initializing the rewards matrix
 R = matrix(0, rowLimit * colLimit, 4)
@@ -104,17 +104,6 @@ epsilonGreedy <- function(state, epsilon, Matrix) {
     return(neighborhood[index,])
   }
 }
-# Finds max neighbor of Q matrix
-findQMax <- function(stateAction, Matrix) {
-  N <- findNeighbor(stateAction)
-  values <- c()
-  for(i in 1:nrow(N)){
-    action <- N[i,2]
-    values <- c(values, Matrix[stateAction[1], action])
-  }
-  return(max(values))
-}
-
 populateMappingMatrix <- function(Map) {
   for(i in 1:12){
     Map[i,1] = 1
@@ -157,26 +146,27 @@ for(j in 1:1000){
   P[mapCell[1], mapCell[2]] = P[mapCell[1], mapCell[2]] + 1
   
   nextStateAction = epsilonGreedy(currentStateAction, epsilon, Q)
-  currentStateAction = nextStateAction
   # One Episode
   
   repeat {
-    
-    nextStateAction = epsilonGreedy(currentStateAction, epsilon, Q)
+    nextnextStateAction = epsilonGreedy(nextStateAction, epsilon, Q)
     
     # Q Learning Formula
     Q[currentStateAction[1],nextStateAction[2]] = Q[currentStateAction[1],nextStateAction[2]] + alpha * 
-      (R[currentStateAction[1],nextStateAction[2]] +
-         gamma * Q[nextStateAction[1], nextStateAction[2]] - Q[currentStateAction[1],nextStateAction[2]])
+      (R[currentStateAction[1],nextStateAction[2]] + gamma
+        * Q[nextStateAction[1], nextnextStateAction[2]] - Q[currentStateAction[1],nextStateAction[2]])
     
     # If he falls into cliff
     if(currentStateAction[1] > 37 && currentStateAction[1] < 48){
       print("AAAAAAWWWWWWWWWWWWWWWWWWWWWW!!!!")
       counter = counter + 1
       currentStateAction = initialState
+      nextStateAction = epsilonGreedy(currentStateAction, epsilon, Q)
+      
     }
     else{
       currentStateAction = nextStateAction
+      nextStateAction = nextnextStateAction
     }
     
     mapCell = mapping(currentStateAction, MappingMatrix)
@@ -189,4 +179,4 @@ for(j in 1:1000){
   }
 }
 
-print(counter)
+print(P)

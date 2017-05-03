@@ -7,7 +7,7 @@ library(nnet)
 rowLimit = 4
 colLimit = 12
 # Greedy factor: Lower greedy, Higher random
-epsilon = 0
+epsilon = 0.1
 # Learning Rate
 alpha = 0.8
 # Exploration factor: Lower immediate reward, Higher later reward
@@ -77,6 +77,8 @@ Q = matrix(0, rowLimit * colLimit, 4)
 MappingMatrix = matrix(0, rowLimit * colLimit, 2)
 MappingMatrix <- populateMappingMatrix(MappingMatrix)
 P = matrix(0, rowLimit, colLimit)
+VisualQ = matrix(0, rowLimit, colLimit)
+
 
 # Starting point, initial point
 initialState = c(37, 1)
@@ -143,10 +145,23 @@ mapping <- function(state, Map) {
   return(cell)
 }
 
-# # Function Test
-# Neigh <- findNeighbor(c(1,12))
-# cell <-epsilonGreedy(Neigh, 0.5, R)
-# print(cell)
+# Visualize Q values along the best path
+visualizeQMatrix <- function(Matrix, initial, goal) {
+  visualization = matrix(0, rowLimit, colLimit)
+  currentState = c(0, 0)
+  currentState = initial
+  repeat{
+    nextState = epsilonGreedy(currentState, 0, Matrix)
+    reward = findQMax(currentState, Matrix)
+    mapCell = mapping(nextState, MappingMatrix)
+    visualization[mapCell[1], mapCell[2]] = reward
+    currentState = nextState
+    if(currentState[1] == goal[1]) {
+      break
+    }
+  }
+  return(visualization)
+}
 
 # Statistical variables of the average value and the standard deviation
 rewardInfo <- matrix(0, nrow = 20, ncol = 1000)
@@ -201,3 +216,5 @@ for (i in 1:20) {
   }
   print(counter)
 }
+VisualQ = visualizeQMatrix(Q, initialState, goalState) 
+VisualQ

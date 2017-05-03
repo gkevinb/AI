@@ -7,7 +7,7 @@ library(nnet)
 rowLimit = 4
 colLimit = 12
 # Greedy factor: Lower greedy, Higher random
-epsilon = 0.2
+epsilon = 0
 # Learning Rate
 alpha = 0.8
 # Exploration factor: Lower immediate reward, Higher later reward
@@ -178,7 +178,7 @@ for (i in 1:20) {
       reward = c(reward, Q[currentStateAction[1], nextStateAction[2]])
       
       # If he falls into cliff
-      if (currentStateAction[1] > 37 && currentStateAction[1] < 48) {
+      if (nextStateAction[1] > 37 && nextStateAction[1] < 48) {
         print("AAAAAAWWWWWWWWWWWWWWWWWWWWWW!!!! ")
         currentStateAction = initialState
       }

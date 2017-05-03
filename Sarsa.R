@@ -162,54 +162,66 @@ visualizeQMatrix <- function(Matrix, initial, goal) {
   }
   return(visualization)
 }
-
-# The SARSA
-for(j in 1:1000){
-  P = matrix(0, rowLimit, colLimit)
-  # Initilizing Episode
-  counter = 0;
-  currentStateAction = initialState
-  mapCell = mapping(currentStateAction, MappingMatrix)
-  P[mapCell[1], mapCell[2]] = P[mapCell[1], mapCell[2]] + 1
+# Statistical variables of the average value and the standard deviation
+rewardInfo <- matrix(0, nrow = 20, ncol = 1000)
+pathInfo <- matrix(0, nrow = 20, ncol = 1000)
+#Running the algorithm 20 times to create statistics
+for(i in 1:20){
+  Q = matrix(0, rowLimit * colLimit, 4)
+  counter <- i
   
-  nextStateAction = epsilonGreedy(currentStateAction, epsilon, Q)
-  
-  # One Episode
-  repeat {
-    nextnextStateAction = epsilonGreedy(nextStateAction, epsilon, Q)
-    
-    # Q Learning Formula
-    Q[currentStateAction[1],nextStateAction[2]] = Q[currentStateAction[1],nextStateAction[2]] + alpha * 
-      (R[currentStateAction[1],nextStateAction[2]] + gamma
-        * Q[nextStateAction[1], nextnextStateAction[2]] - Q[currentStateAction[1],nextStateAction[2]])
-    # Plots Q values along path on final episode
-    if(j == 1000) {
-      mapCell = mapping(currentStateAction, MappingMatrix)
-      VisualQ[mapCell[1], mapCell[2]] = Q[currentStateAction[1],nextStateAction[2]]
-    }
-    
-    # If he falls into cliff
-    if(currentStateAction[1] > 37 && currentStateAction[1] < 48){
-      print("AAAAAAWWWWWWWWWWWWWWWWWWWWWW!!!!")
-      counter = counter + 1
-      currentStateAction = initialState
-      nextStateAction = epsilonGreedy(currentStateAction, epsilon, Q)
-      
-    }
-    else{
-      currentStateAction = nextStateAction
-      nextStateAction = nextnextStateAction
-    }
-    
+  # The SARSA
+  for(j in 1:1000){
+    reward <- c()
+    P = matrix(0, rowLimit, colLimit)
+    # Initilizing Episode
+    currentStateAction = initialState
     mapCell = mapping(currentStateAction, MappingMatrix)
     P[mapCell[1], mapCell[2]] = P[mapCell[1], mapCell[2]] + 1
     
-    if(currentStateAction[1] == goalState[1]) {
-      break
-    }
+    nextStateAction = epsilonGreedy(currentStateAction, epsilon, Q)
     
+    # One Episode
+    repeat {
+      nextnextStateAction = epsilonGreedy(nextStateAction, epsilon, Q)
+      
+      # Q Learning Formula
+      Q[currentStateAction[1],nextStateAction[2]] = Q[currentStateAction[1],nextStateAction[2]] + alpha * 
+        (R[currentStateAction[1],nextStateAction[2]] + gamma
+         * Q[nextStateAction[1], nextnextStateAction[2]] - Q[currentStateAction[1],nextStateAction[2]])
+      # Plots Q values along path on final episode
+      if(j == 1000) {
+        mapCell = mapping(currentStateAction, MappingMatrix)
+        VisualQ[mapCell[1], mapCell[2]] = Q[currentStateAction[1],nextStateAction[2]]
+      }
+      
+      # gets the reward
+      reward = c(reward, Q[currentStateAction[1], nextStateAction[2]])
+      
+      # If he falls into cliff
+      if(currentStateAction[1] > 37 && currentStateAction[1] < 48){
+        print("AAAAAAWWWWWWWWWWWWWWWWWWWWWW!!!!")
+        counter = counter + 1
+        currentStateAction = initialState
+        nextStateAction = epsilonGreedy(currentStateAction, epsilon, Q)
+        
+      }
+      else{
+        currentStateAction = nextStateAction
+        nextStateAction = nextnextStateAction
+      }
+      
+      mapCell = mapping(currentStateAction, MappingMatrix)
+      P[mapCell[1], mapCell[2]] = P[mapCell[1], mapCell[2]] + 1
+      
+      if(currentStateAction[1] == goalState[1]) {
+        # Adding cumulative reward and path per episode
+        rewardInfo[i, j] <- sum(reward)
+        pathInfo[i, j] <- sum(P)
+        break
+      }
+    }
   }
+  print(counter)
 }
-
-
-VisualQ = visualizeQMatrix(Q, initialState, goalState)
+VisualQ = visualizeQMatrix(Q, initialState, goalState) 

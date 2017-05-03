@@ -7,14 +7,11 @@ library(nnet)
 rowLimit = 4
 colLimit = 12
 # Greedy factor: Lower greedy, Higher random
-epsilon = 0
-
+epsilon = 0.2
 # Learning Rate
 alpha = 0.8
-
 # Exploration factor: Lower immediate reward, Higher later reward
 gamma = 0.7
-
 
 # Populate Rewards Matrix
 populateR <- function(RMatrix) {
@@ -177,7 +174,7 @@ for (i in 1:20) {
         (R[currentStateAction[1], nextStateAction[2]] +
            gamma * findQMax(nextStateAction, Q) - Q[currentStateAction[1], nextStateAction[2]])
       
-      #lists the rewards
+      # gets the reward
       reward = c(reward, Q[currentStateAction[1], nextStateAction[2]])
       
       # If he falls into cliff
@@ -204,61 +201,3 @@ for (i in 1:20) {
   }
   print(counter)
 }
-
-# Statistics processing
-getAverage <- function(list) {
-  avg <- matrix(0,1,1000)
-  for (i in 1:1000) {
-    avg[1,i] <- mean(list[, i])
-  }
-  return(avg)
-}
-avgReward <- getAverage(rewardInfo)
-avgPath <- getAverage(pathInfo)
-
-getSD <- function(list){
-  sd <- matrix(0,1,1000)
-  for (i in 1:1000) {
-    sd[1,i] <- sd(list[, i])
-  }
-  return(sd)
-}
-sdReward <- getSD(rewardInfo)
-sdPath <- getSD(pathInfo)
-
-#Plotting of values
-
-avgReward <- round(avgReward, 5)
-#Trim rewardList for visual purposes
-trimRewardList <- function(rewards){
-  for(i in 1:length(rewards)){
-    if(rewards[i] == rewards[i+1]){
-      length(rewards) <- i
-      return(rewards)
-    }
-  }
-}
-#Make sure that each list is the same length
-avgReward <- trimRewardList(avgReward)
-length(sdReward) <- length(avgReward)
-length(avgPath) <- length(avgReward)
-length(sdPath) <- length(avgReward)
-
-#Plot cumulative reward per episode
-plotRewards <- function(avg,sdev){
-  plot(1:length(avg), avg, ylim = range(c(avg-sdev, avg+sdev)),
-  pch=".", xlab = "Episodes", ylab = "Reward +/- SD", type="o",
-  main = "Rewards Per Episode with SD Error Bars")
-  arrows(1:length(avg), avg-sdev, 1:length(avg), avg+sdev, length =0.02, angle =90, code=3, col =360)
-}
-plotRewards(avgReward,sdReward)
-
-#Plot cumulative Path length per episode
-plotPathLength <- function(avg,sdev){
-  plot(1:length(avg), avg, ylim = range(c(avg-sdev, avg+sdev)),
-       pch=".", xlab = "Episodes", ylab = "Path Length +/- SD", type="o",
-       main = "Path Length Per Episode with SD Error Bars")
-  arrows(1:length(avg), avg-sdev, 1:length(avg), avg+sdev, length =0.02, angle =90, code=3, col =360)
-}
-
-plotPathLength(avgPath, sdPath)

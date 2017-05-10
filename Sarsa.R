@@ -9,9 +9,50 @@ colLimit = 12
 # Greedy factor: Lower greedy, Higher random
 epsilon = 0.1;
 # Learning Rate
-alpha = 0.4;
+alpha = 0.2;
 # Exploration factor: Lower immediate reward, Higher later reward
 gamma = 0.8;
+
+# Populate Rewards Matrix
+populateR <- function(RMatrix) {
+  rewards = matrix(0, rowLimit * colLimit, 4)
+  for (i in 1:nrow(RMatrix)) {
+    #UP
+    if (12 < i)
+      rewards[i, 1] <- -1
+    #LEFT
+    if (i %% 12 != 1)
+      rewards[i, 2] <- -1
+    #DOWN
+    if (i < 37)
+      rewards[i, 3] <- -1
+    #RIGHT
+    if (i %% 12 != 0)
+      rewards[i, 4] <- -1
+  }
+  RMatrix[, 1:4] <- rewards[, 1:4]
+  return(RMatrix)
+}
+
+populateMappingMatrix <- function(Map) {
+  for (i in 1:12) {
+    Map[i, 1] = 1
+    Map[i, 2] = i
+  }
+  for (i in 13:24) {
+    Map[i, 1] = 2
+    Map[i, 2] = (i - 12)
+  }
+  for (i in 25:36) {
+    Map[i, 1] = 3
+    Map[i, 2] = (i - 24)
+  }
+  for (i in 37:48) {
+    Map[i, 1] = 4
+    Map[i, 2] = (i - 36)
+  }
+  return(Map)
+}
 
 # Initializing the rewards matrix
 R = matrix(0, rowLimit * colLimit, 4)
@@ -45,27 +86,6 @@ nextStateAction = c(37, 1)
 goalState = c(48, 3)
 
 # Functions
-# Populate Rewards Matrix
-populateR <- function(RMatrix) {
-  rewards = matrix(0, rowLimit * colLimit, 4)
-  for(i in 1:nrow(RMatrix)){
-    #UP
-    if(12 < i)
-      rewards[i, 1] <- -1
-    #LEFT
-    if(i %% 12 != 1)
-      rewards[i, 2] <- -1
-    #DOWN
-    if(i < 37)
-      rewards[i, 3] <- -1
-    #RIGHT
-    if(i %% 12 != 0)
-      rewards[i, 4] <- -1
-  }
-  RMatrix[,1:4] <- rewards[,1:4]
-  return(RMatrix)
-}
-
 #Find all neighboring cells
 findNeighbor <- function(cell) {
   Neighbors = matrix(0, 0, 2)
@@ -116,25 +136,7 @@ findQMax <- function(stateAction, Matrix) {
   }
   return(max(values))
 }
-populateMappingMatrix <- function(Map) {
-  for(i in 1:12){
-    Map[i,1] = 1
-    Map[i,2] = i
-  }
-  for(i in 13:24){
-    Map[i,1] = 2
-    Map[i,2] = (i - 12)
-  }
-  for(i in 25:36){
-    Map[i,1] = 3
-    Map[i,2] = (i - 24)
-  }
-  for(i in 37:48){
-    Map[i,1] = 4
-    Map[i,2] = (i - 36)
-  }
-  return(Map)
-}
+
 mapping <- function(state, Map) {
   cell <- c(0, 0)
   cell[1] <- Map[state[1], 1]

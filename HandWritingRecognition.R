@@ -6,7 +6,8 @@
 # call:  show_digit(train$x[5,])   to see a digit.
 # brendan o'connor - gist.github.com/39760 - anyall.org
 
-setwd('C:/Users/gkevi/Documents/RStudio/Scripts/AI/')
+#setwd('C:/Users/gkevi/Documents/RStudio/Scripts/AI/')
+setwd("C:/Users/Stew-/Desktop/AI/")
 
 
 load_mnist <- function() {
@@ -41,7 +42,39 @@ load_mnist <- function() {
 show_digit <- function(arr784, col=gray(12:1/12), ...) {
   image(matrix(arr784, nrow=28)[,28:1], col=col, ...)
 }
+
+show_compr_digit <- function(arr196, col=gray(12:1/12), ...) {
+  image(t(arr196)[,14:1], col=col,...)
+}
+
 load_mnist()
+
+seperateNumber <- function(arr){
+  pxMatrix <- matrix(0,28,28)
+  for(i in 1:28){
+    for(j in 1:28){
+      pxMatrix[i,j] <- arr[(i-1)*28+j]
+    }
+  }
+  return(pxMatrix)
+}
+firstNumber <- matrix(0,28,28)
+firstNumber <- seperateNumber(train$x[1,])
+firstNumber
+
+avgPooling <- function(inputMatrix){
+  pxMatrix <- matrix(0,14,14)
+  for(i in 1:14){
+    for(j in 1:14){
+      pxMatrix[i,j] <- round(mean(inputMatrix[(2*i-1):(2*i),(2*j-1):(2*j)]),0)
+    }
+  }
+  return(pxMatrix)
+}
+
+comprFirst <- matrix(0,14,14)
+comprFirst <- avgPooling(firstNumber)
+comprFirst
 
 # Some testing
 show_digit(train$x[932,])
@@ -51,12 +84,12 @@ show_digit(test$x[932,])
 test$n
 test$y[932]
 
-
+#install.packages("kohonen")
 require(kohonen)
 data_train_matrix <- as.matrix(scale(train$x))
 dim(data_train_matrix)
 
-sommap <- som(scale(data_train_matrix), grid = somgrid(5, 4, "hexagonal"))
+sommap <- som(scale(data_train_matrix), grid = somgrid(5, 4,"hexagonal"))
 
 ## use hierarchical clustering to cluster the codebook vectors
 plot(sommap, main = "Wine data")

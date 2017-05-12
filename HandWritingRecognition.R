@@ -44,11 +44,12 @@ show_digit <- function(arr784, col=gray(12:1/12), ...) {
 }
 
 show_compr_digit <- function(arr196, col=gray(12:1/12), ...) {
-  image(t(arr196)[,14:1], col=col,...)
+  image(t(arr196)[,14:1], col=col, xaxt="n", yaxt="n")
 }
 
 load_mnist()
 
+#seperate a number from the training set
 seperateNumber <- function(arr){
   pxMatrix <- matrix(0,28,28)
   for(i in 1:28){
@@ -60,8 +61,9 @@ seperateNumber <- function(arr){
 }
 firstNumber <- matrix(0,28,28)
 firstNumber <- seperateNumber(train$x[1,])
-firstNumber
+# firstNumber
 
+# Average pools the selected number
 avgPooling <- function(inputMatrix){
   pxMatrix <- matrix(0,14,14)
   for(i in 1:14){
@@ -74,31 +76,73 @@ avgPooling <- function(inputMatrix){
 
 comprFirst <- matrix(0,14,14)
 comprFirst <- avgPooling(firstNumber)
-comprFirst
+# comprFirst
 
-# Some testing
-show_digit(train$x[932,])
-train$n
-train$y[932]
-show_digit(test$x[932,])
-test$n
-test$y[932]
+# Gets a list of 100 numbers from the training set
+getNumbers <- function(){
+  multipleArrays <- list()
+  for(i in 1:100){
+    multipleArrays[[i]] <- avgPooling(seperateNumber(train$x[i,]))
+  }
+  return(multipleArrays)
+}
 
-#install.packages("kohonen")
-require(kohonen)
-data_train_matrix <- as.matrix(scale(train$x))
-dim(data_train_matrix)
+numbersMatrix <- list()
+numbersMatrix <- getNumbers()
 
-sommap <- som(scale(data_train_matrix), grid = somgrid(5, 4,"hexagonal"))
+# Returns a number in vector form rather than a matrix form
+matrixToVector <- function(matrix){
+  v <- c()
+  for(i in 1:14){
+    v <- c(v, matrix[i,])
+  }
+  return(v)
+}
 
-## use hierarchical clustering to cluster the codebook vectors
-plot(sommap, main = "Wine data")
-som_grid <- somgrid(xdim = 20, ydim=20, topo="hexagonal")
-sommap <- som(data_train_matrix, grid = som_grid)
-som_model <- som(data_train_matrix, 
-                 grid=som_grid, 
-                 rlen=100, 
-                 alpha=c(0.05,0.01), 
-                 keep.data = TRUE,
-                 n.hood="circular")
+# Create a matrix that contains each number in a row
+createDataMatrix <- function(){
+  matrix <- matrix(0,100,196)
+  for(i in 1:100){
+    matrix[i,] <- matrixToVector(avgPooling(seperateNumber(train$x[i,])))
+  }
+  return(matrix)
+}
+dataMatrix <- createDataMatrix()
+dataMatrix
+
+#Plots 100 numbers
+plotNumbers<- function(){
+  par(mar=rep(0,4))
+  layout(matrix(1:100, ncol=10, byrow=TRUE))
+  for(i in 1:100){
+    show_compr_digit(numbersMatrix[[i]])
+  }
+}
+--------------------------------------------------------
+
+# # Some testing
+# show_digit(train$x[932,])
+# train$n
+# train$y[932]
+# show_digit(test$x[932,])
+# test$n
+# test$y[932]
+# 
+# #install.packages("kohonen")
+# require(kohonen)
+# data_train_matrix <- as.matrix(scale(train$x))
+# dim(data_train_matrix)
+# 
+# sommap <- som(scale(data_train_matrix), grid = somgrid(5, 4,"hexagonal"))
+# 
+# ## use hierarchical clustering to cluster the codebook vectors
+# plot(sommap, main = "Wine data")
+# som_grid <- somgrid(xdim = 20, ydim=20, topo="hexagonal")
+# sommap <- som(data_train_matrix, grid = som_grid)
+# som_model <- som(data_train_matrix, 
+#                  grid=som_grid, 
+#                  rlen=100, 
+#                  alpha=c(0.05,0.01), 
+#                  keep.data = TRUE,
+#                  n.hood="circular")
 

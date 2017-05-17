@@ -59,8 +59,8 @@ seperateNumber <- function(arr){
   }
   return(pxMatrix)
 }
-firstNumber <- matrix(0,28,28)
-firstNumber <- seperateNumber(train$x[1,])
+#firstNumber <- matrix(0,28,28)
+#firstNumber <- seperateNumber(train$x[1,])
 # firstNumber
 
 # Average pools the selected number
@@ -74,21 +74,21 @@ avgPooling <- function(inputMatrix){
   return(pxMatrix)
 }
 
-comprFirst <- matrix(0,14,14)
-comprFirst <- avgPooling(firstNumber)
+#comprFirst <- matrix(0,14,14)
+#comprFirst <- avgPooling(firstNumber)
 # comprFirst
 
-# Gets a list of 100 numbers from the training set
-getNumbers <- function(){
+# Gets a list of 100 numbers from the training set, the list contains 100 matrices of 14x14
+getNumbers <- function(numberMatrix){
   multipleArrays <- list()
   for(i in 1:100){
-    multipleArrays[[i]] <- avgPooling(seperateNumber(train$x[i,]))
+    multipleArrays[[i]] <- avgPooling(seperateNumber(numberMatrix[i,]))
   }
   return(multipleArrays)
 }
 
 numbersMatrix <- list()
-numbersMatrix <- getNumbers()
+numbersMatrix <- getNumbers(train$x)
 
 # Returns a number in vector form rather than a matrix form
 matrixToVector <- function(matrix){
@@ -111,38 +111,31 @@ dataMatrix <- createDataMatrix()
 dataMatrix
 
 #Plots 100 numbers
-plotNumbers<- function(){
+plotNumbers<- function(somList){
   par(mar=rep(0,4))
   layout(matrix(1:100, ncol=10, byrow=TRUE))
   for(i in 1:100){
-    show_compr_digit(numbersMatrix[[i]])
+    show_compr_digit(somList[[i]])
   }
 }
---------------------------------------------------------
 
-# # Some testing
-# show_digit(train$x[932,])
-# train$n
-# train$y[932]
-# show_digit(test$x[932,])
-# test$n
-# test$y[932]
-# 
-# #install.packages("kohonen")
-# require(kohonen)
-# data_train_matrix <- as.matrix(scale(train$x))
-# dim(data_train_matrix)
-# 
-# sommap <- som(scale(data_train_matrix), grid = somgrid(5, 4,"hexagonal"))
-# 
-# ## use hierarchical clustering to cluster the codebook vectors
-# plot(sommap, main = "Wine data")
-# som_grid <- somgrid(xdim = 20, ydim=20, topo="hexagonal")
-# sommap <- som(data_train_matrix, grid = som_grid)
-# som_model <- som(data_train_matrix, 
-#                  grid=som_grid, 
-#                  rlen=100, 
-#                  alpha=c(0.05,0.01), 
-#                  keep.data = TRUE,
-#                  n.hood="circular")
+SOMVectorToMatrix <- function(somVector){
+  m <- matrix(0,14,14)
+  somVector <- floor(somVector)
+  for(i in 1:14){
+    for(j in 1:14){
+      m[i,j] <- somVector[(i-1)*14+j]
+    }
+  }
+  return(m)
+}
 
+SOMMatrixToList <- function(som3DMatrix){
+  multipleArrays <- list()
+  for(i in 1:10){
+    for(j in 1:10){
+      multipleArrays[[(i-1)*10+j]] <- SOMVectorToMatrix(som3DMatrix[i,j,])
+    }
+  }
+  return(multipleArrays)
+}

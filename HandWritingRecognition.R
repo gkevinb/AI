@@ -7,7 +7,7 @@
 # brendan o'connor - gist.github.com/39760 - anyall.org
 
 #setwd('C:/Users/gkevi/Documents/RStudio/Scripts/AI/')
-setwd("C:/Users/Stew-/Desktop/AI/")
+#setwd("C:/Users/Stew-/Desktop/AI/")
 
 
 load_mnist <- function() {

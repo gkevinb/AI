@@ -33,7 +33,7 @@ etaInitial <- 0.1
 t2 <- N
 
 ######################## Initialization ############################
-#Assin random weights vetors to third dimension of som matrix
+#Assign random weights vectors to third dimension of som matrix
 for(i in 1:somRow){
   for(j in 1:somCol){
     som[i, j,] <- runif(dataCol)
@@ -106,6 +106,7 @@ while(n <= N){
 plotNumbers(SOMMatrixToList(som))
 ######################### End of Draw updated SOM Map ############
 
-sommap <- som(dataMatrix, grid= somgrid(10,10, "rectangular"))
-plot(sommap, type = "quality", main="SOM neighbour Disances")
+# sommap <- som(dataMatrix, grid= somgrid(10,10, "rectangular"))
+# plot(sommap, type = "quality", main="SOM neighbour Disances")
+
 

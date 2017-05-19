@@ -1,6 +1,6 @@
 
 createUMatrix <- function(){
-  UMatrix <- matrix(0,10,10)
+  UMatrix <- matrix(0,19,19)
   for(i in 1:10){
     for(j in 1:10){
       if((i == 1 && j == 1) || (i == 10 && j == 1)){

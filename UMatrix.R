@@ -56,8 +56,49 @@ neighbourList <- function(){
   return(neighbourList)
 }
 
+computeDistance <- function(aNodeWeights, bNodeWeights){
+  distanceBetweenAandB <- (1 - cor(aNodeWeights, bNodeWeights))
+  return(distanceBetweenAandB)
+}
+
 UMatrix <- function(list){
   UMatrix <- matrix(0, 19, 19)
   # Compute UMatrix with the given distance relationships from the neighbourhood list.
+
+  # Compute distance between nodes horizontally
+  i <- 1
+  j <- 1
+  for(i_UMatrix in seq(1, 19, 2)){
+    for(j_UMatrix in seq(2, 18, 2)){
+      UMatrix[i_UMatrix,j_UMatrix] <- computeDistance(som[i, j, ], som[i, j+1, ])
+      j <- j + 1
+    }
+    j <- 1
+    i <- i + 1
+  }
+  # Compute distance between nodes vertically
+  i <- 1
+  j <- 1
+  for(i_UMatrix in seq(2, 18, 2)){
+    for(j_UMatrix in seq(1, 19, 2)){
+      if(i_UMatrix %% 4 == 2){
+        UMatrix[i_UMatrix,j_UMatrix] <- computeDistance(som[i, j, ], som[i+1, j, ])
+        if(j_UMatrix != 19)
+          UMatrix[i_UMatrix,j_UMatrix+1] <- computeDistance(som[i, j+1, ], som[i+1, j, ])
+      }
+      if(i_UMatrix %% 4 == 0){
+        UMatrix[i_UMatrix,j_UMatrix] <- computeDistance(som[i, j, ], som[i+1, j, ])
+        if(j_UMatrix != 19)
+          UMatrix[i_UMatrix,j_UMatrix+1] <- computeDistance(som[i, j, ], som[i+1, j+1, ])
+      }
+      j <- j + 1
+    }
+    i <- i + 1
+    j <- 1
+    
+  }
   
+  return(UMatrix)
 }
+nList <- neighbourList()
+uMatrix <- UMatrix(nList)

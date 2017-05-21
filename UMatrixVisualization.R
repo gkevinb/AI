@@ -22,11 +22,11 @@ Hexagon <- function (x, y, unitcell = 1, col = col) {
 #[1,2] will become the node to the right
 #[2,1] will be the first node to the left in the second row
 #So visually you work your way from bottom left to top right
-x <- as.vector(dataMatrix)
+x <- as.vector(uMatrix)
 
 #Number of rows and columns of your SOM
-SOM_Rows <- dim(dataMatrix)[1]
-SOM_Columns <- dim(dataMatrix)[2]
+SOM_Rows <- dim(uMatrix)[1]
+SOM_Columns <- dim(uMatrix)[2]
 
 #To make room for the legend
 par(mar = c(0.4, 2, 2, 7))
@@ -54,7 +54,18 @@ offset <- 0.5 #offset for the hexagons when moving up a row
 for (row in 1:SOM_Rows) {
   for (column in 0:(SOM_Columns - 1)) 
     Hexagon(column + offset, row - 1, col = ColorCode[row + SOM_Rows * column])
-  offset <- ifelse(offset, 0, 0.5)
+  if(row %% 4 == 1) {
+    offset <- ifelse(offset, 0, 0.5)
+  }
+  if(row %% 4 == 2){
+    offset <- ifelse(offset, 0, -0.5)
+  }
+  if(row %% 4 == 3) {
+    offset <- ifelse(offset, 0, 0.5)
+  }
+  if(row %% 4 == 0) {
+    offset <- ifelse(offset, 0, 0.5)
+  }
 }
 
 #Add legend to the right if you want to

@@ -118,6 +118,21 @@ plotNumbers<- function(somList){
     show_compr_digit(somList[[i]])
   }
 }
+plotNumbers2 <- function(somList){
+  par(mar=rep(0,4))
+  layout(matrix(1:100, ncol=10, byrow=TRUE))
+  counter <- 91
+  counter2 <- 91
+  while(counter2 > 0){
+    show_compr_digit(somList[[counter2]])
+    counter2 <- counter2 + 1
+    print(counter2)
+    if(counter2 - counter == 10){
+      counter2 <- counter - 10
+      counter <- counter - 10
+    }
+  }
+}
 
 SOMVectorToMatrix <- function(somVector){
   m <- matrix(0,14,14)

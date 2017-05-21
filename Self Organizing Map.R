@@ -104,6 +104,7 @@ while(n <= N){
 
 ######################### Draw updated SOM Map ###################
 plotNumbers(SOMMatrixToList(som))
+plotNumbers2(SOMMatrixToList(som))
 ######################### End of Draw updated SOM Map ############
 
 # sommap <- som(dataMatrix, grid= somgrid(10,10, "rectangular"))

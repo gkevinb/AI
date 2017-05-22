@@ -1,4 +1,4 @@
-#source("Self Organizing Map.R")
+source("Self Organizing Map.R")
 
 
 neighbourList <- function(){
@@ -146,4 +146,4 @@ UMatrix <- function(){
 
 
 nList <- neighbourList()
-uMatrix <- UMatrix(nList)
+uMatrix <- UMatrix()

@@ -39,8 +39,8 @@ plot(0, 0, type = "n", axes = FALSE, xlim=c(0, SOM_Columns),
 #I use designer.colors to interpolate 50 colors between 
 #the maxmimum number of allowed values in Brewer 
 #Just replace this with any other color palette you like
-ColRamp <- rev(designer.colors(n=50, col=brewer.pal(9, "Spectral")))
-
+#ColRamp <- rev(designer.colors(n=50, col=brewer.pal(9, "Spectral")))
+ColRamp <- rev(designer.colors(n=50, col=c("black", "gray", "gray98")))
 #Make a vector with length(ColRamp) number of bins between the minimum and 
 #maximum value of x. 
 #Next match each point from x with one of the colors in ColorRamp

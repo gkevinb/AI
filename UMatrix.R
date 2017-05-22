@@ -1,6 +1,5 @@
 source("Self Organizing Map.R")
 
-
 neighbourList <- function(){
   neighbourList <- list()
   #Add each distance measurement to a matrix and then save it to the list.
@@ -123,9 +122,9 @@ UMatrix <- function(){
     j <- 1
 
   }
-
-
+  
   # Compute average distance to neighbors for each Node
+  nList <- neighbourList()
   i <- 1
   for(i_UMatrix in seq(19, 1, -2)){
     for(j_UMatrix in seq(1, 19, 2)){
@@ -144,6 +143,4 @@ UMatrix <- function(){
   return(UMatrix)
 }
 
-
-nList <- neighbourList()
 uMatrix <- UMatrix()

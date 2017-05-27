@@ -2,7 +2,7 @@
 library(nnet)
 
 # Initialization
-
+set.seed(12345)
 # Initialize matrix R and Q, first term is values, 2nd row, 3rd coloum
 rowLimit = 4
 colLimit = 12

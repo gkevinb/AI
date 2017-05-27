@@ -2,7 +2,7 @@
 library(nnet)
 
 # Initialization
-
+set.seed(12345)
 # Initialize matrix R and Q, first term is values, 2nd row, 3rd coloum
 rowLimit = 4
 colLimit = 12
@@ -11,7 +11,7 @@ epsilon = 0.1
 # Learning Rate
 alpha = 0.8
 # Exploration factor: Lower immediate reward, Higher later reward
-gamma = 0.7
+gamma = 0.2
 
 # Populate Rewards Matrix
 populateR <- function(RMatrix) {
@@ -216,5 +216,5 @@ for (i in 1:20) {
   }
   print(counter)
 }
-VisualQ = visualizeQMatrix(Q, initialState, goalState) 
-VisualQ
+# VisualQ = visualizeQMatrix(Q, initialState, goalState) 
+# VisualQ

@@ -1,4 +1,4 @@
-source("UMatrix.R")
+source("Assignment2/UMatrix.R")
 meanDataRandom <- c()
 meanDataNonRandom <-c()
 convergenceRandom <-c()

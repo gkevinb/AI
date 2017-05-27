@@ -1,4 +1,4 @@
-source("Self Organizing Map.R")
+source("Assignment2/Self Organizing Map.R")
 
 neighbourList <- function(){
   neighbourList <- list()

@@ -1,4 +1,8 @@
-source("Sarsa.R")
+################################################# SARSA #######################################
+#source("Exp_func_Sarsa.R")
+
+################################################ Q-Learning ###################################
+#source("Exp_func_Q-Learning.R")
 
 # Statistics processing
 getAverage <- function(list) {
@@ -85,7 +89,7 @@ plotPathLengthLesser <- function(avg,sdev){
        main = "Sarsa - Path Length Per Episode with SD Error Bars")
   axis(side=1, at=seq(0,100, by=5))
   axis(side=2, at=seq(0, 600, by=20))
-  arrows(1:length(avg), avg-sdev, 1:length(avg), avg+sdev, length =0.02, angle =90, code=3, col=360)
+  arrows(1:length(avg), avg-sdev, 1:length(avg), avg+sdev, length =0.02, angle =90, code=3)
 }
 avgPath <- avgPath[2:100]
 sdPath <- sdPath[2:100]

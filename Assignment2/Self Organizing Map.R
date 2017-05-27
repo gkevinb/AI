@@ -1,4 +1,4 @@
-#source("HandWritingRecognition.R")
+source("Assignment2/HandWritingRecognition.R")
 SOM <- function(seed, bool){
   set.seed(seed)
   dataRow <- dim(dataMatrix)[1]

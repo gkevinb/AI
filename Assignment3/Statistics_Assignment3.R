@@ -1,4 +1,8 @@
-source("QLearning - 48x4.R")
+# FOr Q-learning comment out the source function below
+#source("assignment3/QLearning - 48x4.R")
+
+# FOr SARSA comment out the source function below
+#source("assignment3/Sarsa.R")
 
 # Statistics processing
 getAverage <- function(list) {

@@ -7,7 +7,7 @@ set.seed(12345)
 rowLimit = 4
 colLimit = 12
 # Greedy factor: Lower greedy, Higher random
-epsilon = 0.2;
+epsilon = 0.1;
 # Learning Rate
 alpha = 0.2;
 # Exploration factor: Lower immediate reward, Higher later reward

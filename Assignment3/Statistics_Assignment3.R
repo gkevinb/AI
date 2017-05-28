@@ -54,7 +54,7 @@ plotRewards <- function(avg,sdev){
        #main = "SARSA - Rewards Per Episode with SD Error Bars")
        main = "Q-Learning - Rewards Per Episode with SD Error Bars")
   axis(side=1, at=seq(0,100, by=5))
-  axis(side=2, at=seq(-1500, 500, by=250))
+  axis(side=2, at=seq(-1500, 500, by=100))
   arrows(1:length(avg), avg-sdev, 1:length(avg), avg+sdev, length =0.02, angle =90, code=3, col =360)
 }
 plotRewards(avgReward,sdReward)
@@ -80,7 +80,7 @@ plotPathLength <- function(avg,sdev){
        #main = "SARSA - Path Length Per Episode with SD Error Bars")
        main = "Q-Learning - Path Length Per Episode with SD Error Bars")
   axis(side=1, at=seq(0,100, by=5))
-  axis(side=2, at=seq(0, 600, by=25))
+  axis(side=2, at=seq(0, 800, by=50))
   arrows(1:length(avg), avg-sdev, 1:length(avg), avg+sdev, length =0.02, angle =90, code=3, col =360)
 }
 plotPathLength(avgPath, sdPath)
@@ -92,7 +92,7 @@ plotPathLengthLesser <- function(avg,sdev){
        #main = "SARSA - Path Length Per Episode with SD Error Bars")
        main = "Q-Learning - Path Length Per Episode with SD Error Bars")
   axis(side=1, at=seq(0,100, by=5))
-  axis(side=2, at=seq(0, 600, by=10))
+  axis(side=2, at=seq(0, 600, by=20))
   arrows(1:length(avg), avg-sdev, 1:length(avg), avg+sdev, length =0.02, angle =90, code=3, col =360)
 }
 avgPath <- avgPath[2:100]

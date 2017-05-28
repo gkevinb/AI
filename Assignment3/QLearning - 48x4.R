@@ -7,11 +7,11 @@ set.seed(12345)
 rowLimit = 4
 colLimit = 12
 # Greedy factor: Lower greedy, Higher random
-epsilon = 0.1
+epsilon = 0.2
 # Learning Rate
-alpha = 0.8
+alpha = 0.2
 # Exploration factor: Lower immediate reward, Higher later reward
-gamma = 0.2
+gamma = 0.7
 
 # Populate Rewards Matrix
 populateR <- function(RMatrix) {

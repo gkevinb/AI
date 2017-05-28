@@ -12,9 +12,9 @@ epsilon <- function(x){
   return(0.2*exp(x))
 }
 # Learning Rate
-alpha = 0.4;
+alpha = 0.2;
 # Exploration factor: Lower immediate reward, Higher later reward
-gamma = 0.8;
+gamma = 0.7;
 
 # Initializing the rewards matrix
 R = matrix(0, rowLimit * colLimit, 4)

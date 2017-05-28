@@ -53,7 +53,7 @@ plotRewards <- function(avg,sdev){
        pch=20, xlab = "Episodes", ylab = "Reward +/- SD", type="o",
        main = "Sarsa - Rewards Per Episode with SD Error Bars")
   axis(side=1, at=seq(0,100, by=5))
-  axis(side=2, at=seq(-1500, 500, by=250))
+  axis(side=2, at=seq(-1500, 500, by=100))
   arrows(1:length(avg), avg-sdev, 1:length(avg), avg+sdev, length =0.02, angle =90, code=3, col =360)
 }
 plotRewards(avgReward,sdReward)
@@ -64,7 +64,7 @@ plotRewardsLesser <- function(avg,sdev){
        pch=20, xlab = "Episodes", ylab = "Reward +/- SD", type="o",
        main = "Sarsa - Rewards Per Episode with SD Error Bars")
   axis(side=1, at=seq(0,100, by=5))
-  axis(side=2, at=seq(-1500, 500, by=100))
+  axis(side=2, at=seq(-1500, 500, by=50))
   arrows(1:length(avg), avg-sdev, 1:length(avg), avg+sdev, length =0.02, angle =90, code=3, col =360)
 }
 avgReward <- avgReward[2:100]
@@ -77,7 +77,7 @@ plotPathLength <- function(avg,sdev){
        pch=20, xlab = "Episodes", ylab = "Path Length +/- SD", type="o",
        main = "Sarsa - Path Length Per Episode with SD Error Bars")
   axis(side=1, at=seq(0,100, by=5))
-  axis(side=2, at=seq(0, 600, by=50))
+  axis(side=2, at=seq(0, 600, by=25))
   arrows(1:length(avg), avg-sdev, 1:length(avg), avg+sdev, length =0.02, angle =90, code=3, col =360)
 }
 plotPathLength(avgPath, sdPath)
@@ -89,7 +89,7 @@ plotPathLengthLesser <- function(avg,sdev){
        main = "Sarsa - Path Length Per Episode with SD Error Bars")
   axis(side=1, at=seq(0,100, by=5))
   axis(side=2, at=seq(0, 600, by=20))
-  arrows(1:length(avg), avg-sdev, 1:length(avg), avg+sdev, length =0.02, angle =90, code=3)
+  arrows(1:length(avg), avg-sdev, 1:length(avg), avg+sdev, length =0.02, angle =90, code=3, col = 360)
 }
 avgPath <- avgPath[2:100]
 sdPath <- sdPath[2:100]

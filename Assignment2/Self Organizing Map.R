@@ -1,5 +1,10 @@
+<<<<<<< HEAD:Self Organizing Map.R
 #source("HandWritingRecognition.R")
 SOM <- function(seed, isRand, LR, widthOfN, decayFunc){
+=======
+source("Assignment2/HandWritingRecognition.R")
+SOM <- function(seed, bool){
+>>>>>>> bc595fe988ceebf308b3bb1335cd8021ed8bba41:Assignment2/Self Organizing Map.R
   set.seed(seed)
   dataRow <- dim(dataMatrix)[1]
   dataCol <- dim(dataMatrix)[2]

@@ -12,7 +12,7 @@ epsilon <- function(x){
   return(0.2*exp(x))
 }
 # Learning Rate
-alpha = 0.8
+alpha = 0.2
 # Exploration factor: Lower immediate reward, Higher later reward
 gamma = 0.7
 

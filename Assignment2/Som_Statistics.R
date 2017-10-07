@@ -1,3 +1,4 @@
+<<<<<<< HEAD:Som_Statistics.R
 source("UMatrix.R")
 meanData1 <- c()
 meanData2 <-c()
@@ -11,6 +12,15 @@ convergence3 <- c()
 for(i in seq(10,100, by=10)){
   # Option 1
   list <- SOM(i, TRUE, 0.1, 5, 'lin')
+=======
+source("Assignment2/UMatrix.R")
+meanDataRandom <- c()
+meanDataNonRandom <-c()
+convergenceRandom <-c()
+convergenceNonRandom <- c()
+for(i in seq(10,200, by=10)){
+  list <- SOM(i, TRUE)
+>>>>>>> bc595fe988ceebf308b3bb1335cd8021ed8bba41:Assignment2/Som_Statistics.R
   som <- list[[1]]
   uMatrix <- UMatrix()
   meanData1 <- c(meanData1,mean(uMatrix))

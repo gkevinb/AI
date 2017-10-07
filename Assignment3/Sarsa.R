@@ -2,16 +2,16 @@
 library(nnet)
 
 # Initialization
-
+set.seed(12345)
 # Initialize matrix R and Q, first term is values, 2nd row, 3rd coloum
 rowLimit = 4
 colLimit = 12
 # Greedy factor: Lower greedy, Higher random
-epsilon = 0.1
+epsilon = 0.1;
 # Learning Rate
-alpha = 0.8
+alpha = 0.2;
 # Exploration factor: Lower immediate reward, Higher later reward
-gamma = 0.7
+gamma = 0.7;
 
 # Populate Rewards Matrix
 populateR <- function(RMatrix) {
@@ -58,7 +58,7 @@ populateMappingMatrix <- function(Map) {
 R = matrix(0, rowLimit * colLimit, 4)
 #colnames(R) <- c("UP","LEFT","DOWN","RIGHT")
 R <- populateR(R)
-R[37, 4] = -100
+R[37,4] = -100
 R[26:35, 3] = -100
 R[36, 3] = 100
 R[48, 1:4] = 100
@@ -79,60 +79,59 @@ MappingMatrix <- populateMappingMatrix(MappingMatrix)
 P = matrix(0, rowLimit, colLimit)
 VisualQ = matrix(0, rowLimit, colLimit)
 
-
 # Starting point, initial point
 initialState = c(37, 1)
 currentStateAction = c(37, 1)
 nextStateAction = c(37, 1)
+goalState = c(48, 3)
 
 # Functions
-
 #Find all neighboring cells
 findNeighbor <- function(cell) {
   Neighbors = matrix(0, 0, 2)
   r = cell[1]
   #UP
-  if (12 < r)
-    Neighbors <- rbind(Neighbors, c((r - 12), 1))
+  if(12 < r)
+    Neighbors <- rbind(Neighbors, c((r-12), 1))
   #LEFT
-  if (r %% 12 != 1)
-    Neighbors <- rbind(Neighbors, c((r - 1), 2))
+  if(r %% 12 != 1)
+    Neighbors <- rbind(Neighbors, c((r-1), 2))
   #DOWN
-  if (r < 37)
-    Neighbors <- rbind(Neighbors, c((r + 12), 3))
+  if(r < 37)
+    Neighbors <- rbind(Neighbors, c((r+12), 3))
   #RIGHT
-  if (r %% 12 != 0)
-    Neighbors <- rbind(Neighbors, c((r + 1), 4))
+  if(r %% 12 != 0)
+    Neighbors <- rbind(Neighbors, c((r+1), 4))
   return(Neighbors)
 }
 
 
-# Finds the next cell to move to accodring to the greedy algorithm in Q matrix
+# Finds the next cell to move to according to the greedy algorithm in Q matrix
 epsilonGreedy <- function(state, epsilon, Matrix) {
   #Random number between 0-1
   neighborhood <- findNeighbor(state)
   random = runif(1)
-  if (random < epsilon) {
+  if(random < epsilon) {
     n = nrow(neighborhood)
     winner = sample(1:n, 1)
-    return(neighborhood[winner, ])
+    return(neighborhood[winner,])
   }
   else {
     rewards = c()
-    for (i in 1:nrow(neighborhood)) {
-      direction <- neighborhood[i, 2]
+    for(i in 1:nrow(neighborhood)){
+      direction <- neighborhood[i,2]
       rewards <- c(rewards, Matrix[state[1], direction])
     }
     index = which.is.max(rewards)
-    return(neighborhood[index, ])
+    return(neighborhood[index,])
   }
 }
 # Finds max neighbor of Q matrix
 findQMax <- function(stateAction, Matrix) {
   N <- findNeighbor(stateAction)
   values <- c()
-  for (i in 1:nrow(N)) {
-    action <- N[i, 2]
+  for(i in 1:nrow(N)){
+    action <- N[i,2]
     values <- c(values, Matrix[stateAction[1], action])
   }
   return(max(values))
@@ -162,51 +161,53 @@ visualizeQMatrix <- function(Matrix, initial, goal) {
   }
   return(visualization)
 }
-
 # Statistical variables of the average value and the standard deviation
 rewardInfo <- matrix(0, nrow = 20, ncol = 1000)
 pathInfo <- matrix(0, nrow = 20, ncol = 1000)
 #Running the algorithm 20 times to create statistics
-for (i in 1:20) {
+for(i in 1:20){
   Q = matrix(0, rowLimit * colLimit, 4)
   counter <- i
   
-  # The Q-learning
-  for (j in 1:1000) {
-    reward = c()
+  # The SARSA
+  for(j in 1:1000){
+    reward <- c()
     P = matrix(0, rowLimit, colLimit)
     # Initilizing Episode
     currentStateAction = initialState
     mapCell = mapping(currentStateAction, MappingMatrix)
     P[mapCell[1], mapCell[2]] = P[mapCell[1], mapCell[2]] + 1
     
+    nextStateAction = epsilonGreedy(currentStateAction, epsilon, Q)
+    
     # One Episode
     repeat {
-      nextStateAction = epsilonGreedy(currentStateAction, epsilon, Q)
+      nextnextStateAction = epsilonGreedy(nextStateAction, epsilon, Q)
       
       # Q Learning Formula
-      Q[currentStateAction[1], nextStateAction[2]] = Q[currentStateAction[1], nextStateAction[2]] + alpha *
-        (R[currentStateAction[1], nextStateAction[2]] +
-           gamma * findQMax(nextStateAction, Q) - Q[currentStateAction[1], nextStateAction[2]])
+      Q[currentStateAction[1],nextStateAction[2]] = Q[currentStateAction[1],nextStateAction[2]] + alpha * 
+        (R[currentStateAction[1],nextStateAction[2]] + gamma
+         * Q[nextStateAction[1], nextnextStateAction[2]] - Q[currentStateAction[1],nextStateAction[2]])
       
       # gets the reward
       reward = c(reward, Q[currentStateAction[1], nextStateAction[2]])
       
       # If he falls into cliff
-      if (nextStateAction[1] > 37 && nextStateAction[1] < 48) {
-        print("AAAAAAWWWWWWWWWWWWWWWWWWWWWW!!!! ")
+      if(nextStateAction[1] > 37 && nextStateAction[1] < 48){
+        print("AAAAAAWWWWWWWWWWWWWWWWWWWWWW!!!!")
         currentStateAction = initialState
+        nextStateAction = epsilonGreedy(currentStateAction, epsilon, Q)
+        
       }
       else{
         currentStateAction = nextStateAction
+        nextStateAction = nextnextStateAction
       }
       
-      # Mapping the path
       mapCell = mapping(currentStateAction, MappingMatrix)
       P[mapCell[1], mapCell[2]] = P[mapCell[1], mapCell[2]] + 1
       
-      
-      if (currentStateAction[1] == 48) {
+      if(currentStateAction[1] == goalState[1]) {
         # Adding cumulative reward and path per episode
         rewardInfo[i, j] <- sum(reward)
         pathInfo[i, j] <- sum(P)

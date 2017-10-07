@@ -1,5 +1,5 @@
 #source("HandWritingRecognition.R")
-SOM <- function(seed, bool){
+SOM <- function(seed, isRand, LR, widthOfN, decayFunc){
   set.seed(seed)
   dataRow <- dim(dataMatrix)[1]
   dataCol <- dim(dataMatrix)[2]
@@ -15,8 +15,8 @@ SOM <- function(seed, bool){
   # Max number of iterations
   N = 1000;
   
-  # Initial effective width
-  sigmaInitial = 5;
+  # Initial effective Neighborhood width, Originally: 5
+  sigmaInitial = widthOfN;
   
   # Time constant for sigma
   t1 <- N/log(sigmaInitial)
@@ -27,8 +27,8 @@ SOM <- function(seed, bool){
   # Initialize a 10x10 matrix to store neighbourhood functions of neurons
   neighbourhoodF <- matrix(0,10,10)
   
-  # Initial Learning Rate
-  etaInitial <- 0.1
+  # Initial Learning Rate, Originally: 0.1
+  etaInitial <- LR
   
   # Time constant for eta(learning rate)
   t2 <- N
@@ -37,12 +37,12 @@ SOM <- function(seed, bool){
   #Assign random weights vectors to third dimension of som matrix
   for(i in 1:somRow){
     for(j in 1:somCol){
-      if(bool == TRUE){
+      if(isRand == TRUE){
         # Random Weights
-        som[i, j,] <- runif(dataCol) 
+        som[i, j,] <- runif(dataCol, 0, 255) 
       } else{
         # Static weights
-        som[i, j,] <- rep(0.5, times=dataCol)
+        som[i, j,] <- rep(127, times=dataCol)
       }
     }
   }
@@ -56,7 +56,14 @@ SOM <- function(seed, bool){
   while(n <= N){
     sigma <- sigmaInitial * exp(-n/t1)
     variance <- sigma^2 
-    eta = etaInitial * exp(-n/t2)
+    # Learning Rate and Learning Rate Function
+    # Decision
+    if(decayFunc == 'exp')
+      eta <- etaInitial * exp(-n/t2)
+    if(decayFunc == 'lin')
+      eta <- etaInitial * (1 - n*(1/t2))
+    if(decayFunc == 'inv')
+      eta <- etaInitial * (111/(n + 110))
     # prevent eta from falling below 0.01
     if(eta < 0.01)
       eta <- 0.01
@@ -121,7 +128,7 @@ SOM <- function(seed, bool){
   }
   ######################### Draw updated SOM Map ###################
   #plotNumbers(SOMMatrixToList(som))
-  #plotNumbers2(SOMMatrixToList(som))
+
   ######################### End of Draw updated SOM Map ############
   list <- list()
   list[[1]] <- som

@@ -6,7 +6,7 @@
 # call:  show_digit(train$x[5,])   to see a digit.
 # brendan o'connor - gist.github.com/39760 - anyall.org
 
-#setwd('C:/Users/gkevi/Documents/RStudio/Scripts/AI/')
+setwd('C:/Users/gkevi/Documents/RStudio/Scripts/AI/')
 #setwd("C:/Users/Stew-/Desktop/AI/")
 
 
@@ -47,8 +47,6 @@ show_compr_digit <- function(arr196, col=gray(12:1/12), ...) {
   image(t(arr196)[,14:1], col=col, xaxt="n", yaxt="n")
 }
 
-load_mnist()
-
 #seperate a number from the training set
 seperateNumber <- function(arr){
   pxMatrix <- matrix(0,28,28)
@@ -79,16 +77,14 @@ avgPooling <- function(inputMatrix){
 # comprFirst
 
 # Gets a list of 100 numbers from the training set, the list contains 100 matrices of 14x14
+# Dont even use this function
 getNumbers <- function(numberMatrix){
   multipleArrays <- list()
   for(i in 1:100){
-    multipleArrays[[i]] <- avgPooling(seperateNumber(numberMatrix[i,]))
+    multipleArrays[[i]] <- numberMatrix[i,]
   }
   return(multipleArrays)
 }
-
-numbersMatrix <- list()
-numbersMatrix <- getNumbers(train$x)
 
 # Returns a number in vector form rather than a matrix form
 matrixToVector <- function(matrix){
@@ -107,8 +103,38 @@ createDataMatrix <- function(){
   }
   return(matrix)
 }
-dataMatrix <- createDataMatrix()
-dataMatrix
+
+# Create a matrix that contains ordered number in a row
+createOrderedDataMatrix <- function(){
+  matrix <- matrix(0, 100, 196)
+  for(i in 0:9){
+    k <- 1
+    for(j in 1:10){
+      while(train$y[k] != i){
+        k <- k + 1
+      }
+      matrix[i*10 + j,] <- matrixToVector(avgPooling(seperateNumber(train$x[k,])))
+      k <- k + 1
+    }
+  }
+  return(matrix)
+}
+
+# Create an array that contains ordered number in a row: FOR PLOTTING PURPOSES
+createOrderedDataArray <- function(){
+  matrix <- array(0, dim = c(10, 10, 196))
+  for(i in 0:9){
+    k <- 1
+    for(j in 1:10){
+      while(train$y[k] != i){
+        k <- k + 1
+      }
+      matrix[(i+1),j,] <- matrixToVector(avgPooling(seperateNumber(train$x[k,])))
+      k <- k + 1
+    }
+  }
+  return(matrix)
+}
 
 #Plots 100 numbers
 plotNumbers<- function(somList){
@@ -116,21 +142,6 @@ plotNumbers<- function(somList){
   layout(matrix(1:100, ncol=10, byrow=TRUE))
   for(i in 1:100){
     show_compr_digit(somList[[i]])
-  }
-}
-plotNumbers2 <- function(somList){
-  par(mar=rep(0,4))
-  layout(matrix(1:100, ncol=10, byrow=TRUE))
-  counter <- 91
-  counter2 <- 91
-  while(counter2 > 0){
-    show_compr_digit(somList[[counter2]])
-    counter2 <- counter2 + 1
-    print(counter2)
-    if(counter2 - counter == 10){
-      counter2 <- counter - 10
-      counter <- counter - 10
-    }
   }
 }
 
@@ -154,3 +165,13 @@ SOMMatrixToList <- function(som3DMatrix){
   }
   return(multipleArrays)
 }
+
+# CODE TO RUN
+
+load_mnist()
+
+dataMatrix <- createOrderedDataMatrix()
+dev.off()
+# For plotting original numbers
+plotMatrix <- createOrderedDataArray()
+plotNumbers(SOMMatrixToList(plotMatrix))

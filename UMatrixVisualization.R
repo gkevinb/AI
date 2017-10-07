@@ -1,6 +1,6 @@
 library(RColorBrewer) #to use brewer.pal
 library(fields) #to use designer.colors
-
+dev.off()
 #Function to create the polygon for each hexagon
 Hexagon <- function (x, y, unitcell = 1, col = col) {
   polygon(c(x, x, x + unitcell/2, x + unitcell, x + unitcell, 
